@@ -29,3 +29,6 @@
 *.exe
 *.out
 *.app
+
+# Eigen
+eigen-3-3.9/

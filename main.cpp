@@ -5,6 +5,11 @@
 #include <sstream>
 #include "Vector3.h"
 #include "Mesh.h"
+#include "Translate.h"
+#include "Scale.h"
+#include "Eigen/Dense"
+
+using namespace Eigen;
 
 using namespace std;
 
@@ -49,9 +54,17 @@ Mesh readObj(string filename) {
                 mesh.pushF(stoi(v1) - 1, stoi(v2) - 1, stoi(v3) - 1);
                 
             }
+
         }
+        Vector3 t(2.0, 2.0, 2.0);
+        Matrix4d m = translate(t);
+        cout << m << endl << endl;
+
+        Matrix4d s = scale(t);
+        cout << s << endl << endl << s * m << endl << endl << m * s << endl;
 
         file.close();
+
     }
 
     return mesh;
