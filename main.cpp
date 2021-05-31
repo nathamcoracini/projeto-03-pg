@@ -3,11 +3,11 @@
 #include <string.h>
 #include <fstream>
 #include <sstream>
-#include "Vector3.h"
 #include "Mesh.h"
 #include "Translate.h"
 #include "Scale.h"
 #include "Eigen/Dense"
+#include "Camera.h"
 
 using namespace Eigen;
 
@@ -19,7 +19,23 @@ const string ObjFilename = "./3d/coarseTri.botijo.obj";
 
 int main() {
     Mesh mesh = readObj(ObjFilename);
-    
+
+    Vector3d t(2.0, 2.0, 2.0);
+    Matrix4d m = translate(t);
+    cout << "Teste Matriz de Transformacao de Translacao: " << endl << m << endl << endl;
+
+    Matrix4d s = scale(t);
+    cout << "Teste Matriz de Transformacao de Escala: " << endl << s << endl << endl;
+
+    Vector3d pos(20.0, 20.0, 20.0);
+    Vector3d target(0.0, 0.0, 0.0);
+    double aspectRatio = 16/9;
+    double fov = 90.0;
+    double far = 25.0;
+    double near = 1.0;
+
+    Camera c(pos, target, aspectRatio, fov, far, near);
+
     return 0;
 }
 
@@ -56,12 +72,6 @@ Mesh readObj(string filename) {
             }
 
         }
-        Vector3 t(2.0, 2.0, 2.0);
-        Matrix4d m = translate(t);
-        cout << m << endl << endl;
-
-        Matrix4d s = scale(t);
-        cout << s << endl << endl << s * m << endl << endl << m * s << endl;
 
         file.close();
 

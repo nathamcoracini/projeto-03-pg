@@ -1,16 +1,17 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "Vector3.h"
 #include "Face.h"
+#include "Eigen/Dense"
 
 #include <vector>
 
 using std::vector;
+using namespace Eigen;
 
 class Mesh {
     private:
-        vector<Vector3> v;
+        vector<Vector3d> v;
         vector<Face> f;
     
     public:
