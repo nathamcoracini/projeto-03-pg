@@ -17,8 +17,8 @@ class Mesh {
     public:
         void pushV(double x, double y, double z);
         void pushF(int v1, int v2, int v3);
-        double** translate(double x, double y, double z);
-        double** scale(double x, double y, double z);
+        vector<Face> getF();
+        vector<Vector3d> getV();
 };
 
 #endif

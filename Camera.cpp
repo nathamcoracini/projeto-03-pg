@@ -1,19 +1,22 @@
 #include "Camera.h"
 #include <iostream>
 
-Camera::Camera(Vector3d pos, Vector3d target, double aspectRatio, double fov, double far, double near) {
+Camera::Camera(Vector3d pos, Vector3d target, double aspectRatio, double fov, double far, double near, int upDirection) {
     this->pos = pos;
     this->target = target;
     this->aspectRatio = aspectRatio;
     this->fov = fov;
     this->far = far;
     this->near = near;
+    this->upDirection = upDirection;
 
     Vector3d tmp = pos - target;
     cameraDirection = tmp.normalized();
     std::cout << cameraDirection << std::endl << std::endl;
 
-    tmp = Vector3d(0.0, 1.0, 0.0);
+    //TODO: Deixar tmp como parametro
+    tmp = Vector3d(0.0, upDirection, 0.0);
+
     tmp = tmp.cross(cameraDirection);
     cameraRight = tmp.normalized();
     std::cout << cameraRight << std::endl << std::endl;
@@ -47,6 +50,8 @@ Camera::Camera(Vector3d pos, Vector3d target, double aspectRatio, double fov, do
                                                                      , 0,                           0,                           -1,                              0;
 
     std::cout << cameraPerspective << std::endl << std::endl;
+
+    //finais = PERSP  * LAT * M * pontos
 }
 
 void Camera::setPos(Vector3d pos) {
@@ -60,4 +65,12 @@ void Camera::setCameraUp(Vector3d cameraUp) {
 }
 void Camera::setCameraRight(Vector3d cameraRight) {
     this->cameraRight = cameraRight;
+}
+
+Matrix4d Camera::getCameraLookAt() {
+    return cameraLookAt;
+}
+
+Matrix4d Camera::getCameraFinal() {
+    return cameraFinal;
 }
