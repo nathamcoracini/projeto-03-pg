@@ -7,6 +7,7 @@
 #include "Translate.h"
 #include "Scale.h"
 #include "Eigen/Dense"
+#include "Rasterizer.h"
 #include "Camera.h"
 
 using namespace Eigen;
@@ -34,7 +35,12 @@ int main() {
     double far = 25.0;
     double near = 1.0;
 
-    Camera c(pos, target, aspectRatio, fov, far, near);
+    Camera c(pos, target, aspectRatio, fov, far, near, 1);
+    Matrix4d final = c.getCameraFinal();
+
+
+    Rasterizer r;
+    r.rasterize(mesh);
 
     return 0;
 }
