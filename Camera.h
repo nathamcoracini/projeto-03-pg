@@ -24,7 +24,7 @@ class Camera {
         Matrix4d cameraFinal;
     
     public:
-        Camera(Vector3d pos, Vector3d target, double aspectRatio, double fov, double far, double near, int upDirection);
+        Camera(Vector3d pos, Vector3d target, double aspectRatio, double fov, double far, double near, Vector3d upCoord);
         void setPos(Vector3d pos);
         void setTarget(Vector3d target);
         void setCameraUp(Vector3d cameraUp);

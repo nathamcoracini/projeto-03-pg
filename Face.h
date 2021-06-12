@@ -3,12 +3,12 @@
 
 class Face {
     private:
-        int v1, v2, v3;
+        unsigned v1, v2, v3;
     public:
-        Face(int v1, int v2, int v3);
-        int getV1();
-        int getV2();
-        int getV3();
+        Face(unsigned v1, unsigned v2, unsigned v3);
+        unsigned getV1();
+        unsigned getV2();
+        unsigned getV3();
 };
 
 #endif

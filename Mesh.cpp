@@ -9,11 +9,3 @@ void Mesh::pushF(int v1, int v2, int v3) {
     Face vec3(v1, v2, v3);
     f.push_back(vec3);
 }
-
-vector<Face> Mesh::getF() {
-    return f;
-}
-
-vector<Vector3d> Mesh::getV() {
-    return v;
-}

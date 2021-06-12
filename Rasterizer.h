@@ -1,19 +1,22 @@
 #include "Eigen/Dense"
 #include "Camera.h"
 #include "Mesh.h"
-#include <cmath>
+#include "Face.h"
 
 #ifndef RASTERIZER_H_
 #define RASTERIZER_H_
 
 class Rasterizer {
     private:
-        std::vector<Vector3d> bresenham(Vector3d ci, Vector3d cf); 
-        int viewport[1920][1080];
+        void bresenham(Vector4d &ci, Vector4d &cf);
+        int h;
+        int w;
+        vector<Vector4d> changeCoord(vector<Vector4d> v);
        
     public:
-        void rasterize(Mesh m);
-        void Rasterize();
+        void rasterize(std::vector<Vector4d> &v, std::vector<Face> &f);
+        Rasterizer(const int &h, const int &w);
+        std::vector<unsigned char> image;
 };
 
 #endif
