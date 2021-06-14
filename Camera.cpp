@@ -10,7 +10,7 @@ Camera::Camera(Vector3d pos, Vector3d target, double aspectRatio, double fov, do
     this->near = near;
     this->upDirection = upDirection;
 
-    Vector3d tmp = pos - target;
+    Vector3d tmp = target - pos;
     cameraDirection = tmp.normalized();
 
     tmp = upCoord;
@@ -34,7 +34,6 @@ Camera::Camera(Vector3d pos, Vector3d target, double aspectRatio, double fov, do
       ,  0 ,    0 , 0,        1;
 
     cameraLookAt = m * n;
-
 
     cameraPerspective << 1 / (aspectRatio * tan(fov / 2) ) ,                           0,                              0,                              0
                                                         , 0,            1 / tan(fov / 2),                              0,                              0

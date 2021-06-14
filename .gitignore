@@ -34,6 +34,7 @@
 workspace.code-workspace
 
 result.png
+main
 
 # Eigen
 eigen-3-3.9/

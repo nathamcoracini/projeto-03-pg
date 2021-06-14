@@ -48,32 +48,24 @@ Matrix4d getModel(stack<Matrix4d> s);
 ********************/
 const string ObjFilename = "./3d/coarseTri.cube.obj";
 const double PI = 3.142592654;
-const int HEIGHT = 1080;
-const int WIDTH = 1920;
-
-//TODO:
-// Definir mundo
-// Normalizar coordenadas entre 0 e 1 -> Compor matrizes
+const int WIDTH = 500;
+const int HEIGHT = 500;
 
 int main() {
 
     Mesh mesh = readObj(ObjFilename);
-
-    cout << mesh.f[0].getV2() << endl;
 
     stack<Matrix4d> s;
 
     // Move o objeto para o centro
     Vector3d ctr = center(mesh);
     Matrix4d toCenter = translate(-ctr);
-    cout << "toCenter: " << endl << toCenter << endl;
 
+    // Normaliza o objeto entre 0 e 1
     s.push(toCenter);
 
     Vector3d scl = normalize(mesh);
-    cout << "Scale: " << endl << scl << endl;
     Matrix4d normalized = scale(scl);
-    cout << "Normalized: " << endl << normalized << endl;
     
     s.push(normalized);
 
@@ -82,12 +74,11 @@ int main() {
     Vector3d pos(20.0, 20.0, 20.0);
     Vector3d target(0.0, 0.0, 0.0);
     Vector3d upCoord(0.0, 1.0, 0.0);
-    double aspectRatio = 16/9;
-    double fov = 90.0;
-    double far = 25.0;
-    double near = 0.1;
 
-    cout << model << endl;
+    double aspectRatio = 1;
+    double fov = 50.0;
+    double far = 40.0;
+    double near = 0.01;
 
     Camera c(pos, target, aspectRatio, rad(fov), far, near, upCoord);
 
@@ -98,8 +89,12 @@ int main() {
     for (unsigned i = 0; i < mesh.v.size(); i++) {
         Vector4d vertice(mesh.v[i].x(), mesh.v[i].y(), mesh.v[i].z(), 1.0);
         result.push_back(final * vertice);
-        // cout << result.back();
     }
+
+    for (unsigned i = 0; i < result.size(); i++) {
+        result[i] /= result[i].w();
+    }
+
 
     Rasterizer r(HEIGHT, WIDTH);
     r.rasterize(result, mesh.f);
@@ -206,7 +201,8 @@ Vector3d normalize(Mesh m) {
     double minY = minVal.y();
     double minZ = minVal.z();
 
-    return Vector3d(2.0 / (maxX - minX), 2.0 / (maxY - minY), 2.0 / (maxZ - minZ));
+    return Vector3d(2 / (maxX - minX), 2 / (maxY - minY), 2 / (maxZ - minZ));
+    // return Vector3d(100, 400, 100);
 }
 
 Matrix4d getModel(stack<Matrix4d> s) {
