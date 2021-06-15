@@ -1,5 +1,4 @@
 #include "Camera.h"
-#include <iostream>
 
 Camera::Camera(Vector3d pos, Vector3d target, double aspectRatio, double fov, double far, double near, Vector3d upCoord) {
     this->pos = pos;

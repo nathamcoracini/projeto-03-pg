@@ -4,23 +4,18 @@
 #include <iostream>
 #include <limits>
 
+/* Rasterização */
 void Rasterizer::rasterize(std::vector<Vector4d> v, std::vector<Face> f) {
 
     std::vector<Vector4d> vtrans = changeCoord(v);
 
     for (unsigned i = 0; i < f.size(); i++) {
 
-        /* Desenha as linhas de um triângulo */
+        /* Desenha as linhas de um triângulo através do algoritmo de Bresenham */
         
         Vector4d vi, vf;
         vi = vtrans[f[i].getV1()];
-
         vf = vtrans[f[i].getV2()];
-
-        // vi = v[f[i].getV1()];
-        // vf = v[f[i].getV2()];
-        // std::cout << vi.x() << std::endl << vf.x() << std::endl;
-        // std::cout << vi.y() << std::endl << vf.y() << std::endl;
 
         bresenham(vi, vf);
 
@@ -33,16 +28,11 @@ void Rasterizer::rasterize(std::vector<Vector4d> v, std::vector<Face> f) {
         vf = vtrans[f[i].getV3()];
 
         bresenham(vi, vf);
-
-        /* Preenche o triângulo */
-        // std::vector<Vector3d> result = scanline(line1, line2, line3);
     }
 
 }
 
-/* Z-Buffer */
-/* Ficar sempre com o maior valor do Z*/
-
+/* Algoritmo de bresenham para desenhar uma linha */
 void Rasterizer::bresenham(Vector4d ci, Vector4d cf) {
     int xi = ci.x(), xf =  cf.x(),  yi =  ci.y(), yf = cf.y();
     double zi = ci.z(), zf = cf.z();
@@ -79,10 +69,13 @@ void Rasterizer::bresenham(Vector4d ci, Vector4d cf) {
     }   
 }
 
-Rasterizer::Rasterizer(const int h, const int w) {
+/* Inicializa a imagem e o zbuffer */
+Rasterizer::Rasterizer(const int h, const int w, const double t, const double r) {
 
     this->h = h;
     this->w = w;
+    this->t = t;
+    this->r = r;
 
     /* Inicia o vetor de imagem */
     image.resize(w * h * 4);
@@ -101,12 +94,11 @@ Rasterizer::Rasterizer(const int h, const int w) {
 }
 
 /* Muda as coordenadas para serem compatíveis com a resolução da imagem de saída */
-
 vector<Vector4d> Rasterizer::changeCoord(vector<Vector4d> v) {
     double xmin = DBL_MAX;
     double ymin = DBL_MAX;
-    double xmax = DBL_MIN;
-    double ymax = DBL_MIN;
+    double xmax = -DBL_MAX;
+    double ymax = -DBL_MAX;
 
     for (unsigned i = 0; i < v.size(); i++) {
         if (v[i].x() < xmin)
@@ -118,6 +110,11 @@ vector<Vector4d> Rasterizer::changeCoord(vector<Vector4d> v) {
         if(v[i].y() > ymax)
             ymax = v[i].y();
     }
+
+    xmin = -this->r;
+    xmax = this->r;
+    ymin = -this->t;
+    ymax = this->t;
 
     vector<Vector4d> final;
     for (unsigned i = 0; i < v.size(); i++) {
@@ -136,27 +133,31 @@ vector<Vector4d> Rasterizer::changeCoord(vector<Vector4d> v) {
 
 }
 
+/* Desenha o pixel de acordo com a cor fornecida */
 void Rasterizer::drawPixel(int x, int y, double z, int r, int g, int b) {
 
-    if (zbuffer[w * y + x] == -DBL_MAX) {
-        // image[4 * w * y + 4 * x + 0] = r;
-        // image[4 * w * y + 4 * x + 1] = g;
-        // image[4 * w * y + 4 * x + 2] = b;
-        image[4 * w * y + 4 * x + 0] = 255 * !(x & y);
-        image[4 * w * y + 4 * x + 1] = x ^ y;
-        image[4 * w * y + 4 * x + 2] = x | y;
-        image[4 * w * y + 4 * x + 3] = 255;
-        zbuffer[w * y + x] = z;
-    }
-    else if(z > zbuffer[w * y + x]) {
-        // image[4 * w * y + 4 * x + 0] = r;
-        // image[4 * w * y + 4 * x + 1] = g;
-        // image[4 * w * y + 4 * x + 2] = b;
-        image[4 * w * y + 4 * x + 0] = 255 * !(x & y);
-        image[4 * w * y + 4 * x + 1] = x ^ y;
-        image[4 * w * y + 4 * x + 2] = x | y;
-        image[4 * w * y + 4 * x + 3] = 255;
-        zbuffer[w * y + x] = z;
+    if (x < w && y < h && x >= 0 && y >= 0) {
+
+        if (zbuffer[w * y + x] == -DBL_MAX) {
+            image[4 * w * y + 4 * x + 0] = r;
+            image[4 * w * y + 4 * x + 1] = g;
+            image[4 * w * y + 4 * x + 2] = b;
+            // image[4 * w * y + 4 * x + 0] = 255 * !(x & y);
+            // image[4 * w * y + 4 * x + 1] = x ^ y;
+            // image[4 * w * y + 4 * x + 2] = x | y;
+            image[4 * w * y + 4 * x + 3] = 255;
+            zbuffer[w * y + x] = z;
+        }
+        else if(z > zbuffer[w * y + x]) {
+            image[4 * w * y + 4 * x + 0] = r;
+            image[4 * w * y + 4 * x + 1] = g;
+            image[4 * w * y + 4 * x + 2] = b;
+            // image[4 * w * y + 4 * x + 0] = 255 * !(x & y);
+            // image[4 * w * y + 4 * x + 1] = x ^ y;
+            // image[4 * w * y + 4 * x + 2] = x | y;
+            image[4 * w * y + 4 * x + 3] = 255;
+            zbuffer[w * y + x] = z;
+        }
     }
     
 }

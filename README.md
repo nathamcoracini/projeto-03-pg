@@ -13,3 +13,9 @@ Repositório para o desenvolvimento do Projeto Parcial 03 de PG.
 - Fábio Yamaya - 760317
 - Natham Coracini - 743582
 - Pablo Laranjo - 726577
+
+**Para compilar:**
+```
+make
+```
+O resultado será exibido em result.png. Para mudar a imagem, basta mudar a string ObjFilename na main.cpp

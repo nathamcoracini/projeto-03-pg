@@ -23,9 +23,9 @@ using namespace std;
 **********************************/
 Mesh readObj(string filename);
 
-/*********************************
-****Função para gerar o PNG*******
-**********************************/
+/*****************************
+****Função para gerar o PNG***
+******************************/
 void encodeOneStep(const char* filename, std::vector<unsigned char>& image, unsigned width, unsigned height);
 
 /***************************************************
@@ -33,23 +33,29 @@ void encodeOneStep(const char* filename, std::vector<unsigned char>& image, unsi
 ****************************************************/
 double rad(double ang);
 
+/* Retorna o vetor do centro de uma mesh */
 Vector3d center(Mesh m);
 
+/* Retorna o máximo de um vetor */
 Vector3d maxArr(vector<Vector3d> v);
 
+/* Retorna o mínimo de um vetor */
 Vector3d minArr(vector<Vector3d> v);
 
+/* Normaliza o vetor para a escala -1 a 1 */
 Vector3d normalize(Mesh m);
 
+/* Monta a matriz model */
 Matrix4d getModel(stack<Matrix4d> s);
 
 /*******************
 *****CONSTANTES*****
 ********************/
 const string ObjFilename = "./3d/coarseTri.cube.obj";
+const string OutFilename = "result.png";
 const double PI = 3.142592654;
-const int WIDTH = 500;
-const int HEIGHT = 500;
+const int WIDTH = 1000;
+const int HEIGHT = 1000;
 
 int main() {
 
@@ -61,7 +67,7 @@ int main() {
     Vector3d ctr = center(mesh);
     Matrix4d toCenter = translate(-ctr);
 
-    // Normaliza o objeto entre 0 e 1
+    // Normaliza o objeto entre -1 e 1
     s.push(toCenter);
 
     Vector3d scl = normalize(mesh);
@@ -71,18 +77,19 @@ int main() {
 
     Matrix4d model = getModel(s);
 
-    Vector3d pos(20.0, 20.0, 20.0);
+    Vector3d pos(40.0, 10.0, 10.0);
     Vector3d target(0.0, 0.0, 0.0);
     Vector3d upCoord(0.0, 1.0, 0.0);
 
     double aspectRatio = 1;
-    double fov = 50.0;
+    double fov = 60.0;
     double far = 40.0;
-    double near = 0.01;
+    double near = 0.1;
 
     Camera c(pos, target, aspectRatio, rad(fov), far, near, upCoord);
 
     Matrix4d final = c.getCameraFinal() * model;
+    
 
     vector<Vector4d> result;
 
@@ -96,14 +103,12 @@ int main() {
     }
 
 
-    Rasterizer r(HEIGHT, WIDTH);
+    Rasterizer r(HEIGHT, WIDTH, near * tan(rad(fov) / 2.0), aspectRatio * (near * tan(rad(fov) / 2.0) ) );
     r.rasterize(result, mesh.f);
 
     std::vector<unsigned char> image = r.image;
 
-    const char* filename = "result.png";
-
-    encodeOneStep(filename, image, WIDTH, HEIGHT);
+    encodeOneStep(OutFilename.c_str(), image, WIDTH, HEIGHT);
 
     return 0;
 }
@@ -201,8 +206,24 @@ Vector3d normalize(Mesh m) {
     double minY = minVal.y();
     double minZ = minVal.z();
 
+    double mymax = std::max(maxX - minX, std::max(maxY - minY, maxZ - minZ));
+
+    return Vector3d(2 / (mymax), 2 / (mymax), 2 / (mymax));
+}
+
+Vector3d normalize2(Mesh m) {
+    Vector3d maxVal = maxArr(m.v);
+    Vector3d minVal = minArr(m.v);
+
+    double maxX = maxVal.x();
+    double maxY = maxVal.y();
+    double maxZ = maxVal.z();
+
+    double minX = minVal.x();
+    double minY = minVal.y();
+    double minZ = minVal.z();
+
     return Vector3d(2 / (maxX - minX), 2 / (maxY - minY), 2 / (maxZ - minZ));
-    // return Vector3d(100, 400, 100);
 }
 
 Matrix4d getModel(stack<Matrix4d> s) {
@@ -216,6 +237,5 @@ Matrix4d getModel(stack<Matrix4d> s) {
         result *= s.top();
         s.pop();
     }
-
     return result;
 }
