@@ -51,7 +51,7 @@ Matrix4d getModel(stack<Matrix4d> s);
 /*******************
 *****CONSTANTES*****
 ********************/
-const string ObjFilename = "./3d/coarseTri.cube.obj";
+const string ObjFilename = "./3d/coarseTri.botijo.obj";
 const string OutFilename = "result.png";
 const double PI = 3.142592654;
 const int WIDTH = 1000;
